@@ -1,0 +1,137 @@
+<style>
+    h1{
+        color: black;
+    }
+    td{
+        color: darkolivegreen;
+    }
+    h4{
+        color: black;
+    }
+</style>
+
+<div class="container">
+    <h1>{{title}}</h1>
+
+    <div class="row col-mid-4">
+        <div class="col-mid-4">
+            <div class="alert alert-success alert-dismissable" *ngIf="msg">
+                <a href="#" class="close" (click)=hide()>&times;</a>
+                <strong>{{msg}}</strong>
+            </div>
+        </div>
+    </div>
+
+    <h3>Add a new movie</h3>
+    <form class="form-inline" [formGroup]='form' #movie='ngForm'>
+        <div class="form-group">
+            <label for="id">ID:</label>
+            <input type="text" class="form-control" placeholder="enter id" formControlName='id' [(ngModel)]='movie_id'>
+            <div *ngIf="form.get('id').dirty || formSubmitclicked">
+                <div *ngIf="form.get('id').hasError('required')" class="alart alart-danger">
+                    The ID field is required.
+                </div>
+                <div *ngIf="form.get('id').hasError('minlength')" class="alart alart-danger">
+                    Minimum 6 character required
+                </div>
+                <div *ngIf="form.get('id').hasError('indexNotUnique')" class="alart alart-danger">
+                    Has already in the list 
+                </div>
+                
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="rank">Rank:</label>
+            <input type="number" class="form-control" placeholder="enter rank" formControlName="rank" [(ngModel)]='movie_rank' >
+            <div *ngIf="form.get('rank').dirty || formSubmitclicked">
+                <div *ngIf="form.get('rank').hasError('required')" class="alart alart-danger">
+                    The Rank field is required.
+                </div>
+                <div *ngIf="form.get('rank').hasError('rankNotUnique')" class="alart alart-danger">
+                    Has already in the list 
+                </div>
+                
+                
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="title">Title:</label>
+            <input type="text" class="form-control" placeholder="enter title" formControlName="title" [(ngModel)]='movie_title' >
+            <div *ngIf="form.get('title').dirty || formSubmitclicked">
+                <div *ngIf="form.get('title').hasError('required')" class="alart alart-danger">
+                    The Title field is required.
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-success" [disabled]="!movie.form.valid" (click)=addMovie()>submit</button>
+
+    </form>
+
+    <div *ngIf=update>
+        <h3>Update Movie Info</h3>
+        <form #edit="ngForm" class="form-inline">
+            <div class="form-group">
+                <label for="id">ID:</label>
+                <input type="text" class="form-control" required minlength="6" name='uid' [(ngModel)]='update_id' #a="ngModel" >
+                <div *ngIf="a.errors && (a.dirty || a.touched)" >
+                    <div [hidden]="!a.errors.required">
+                        the ID is required
+                    </div>
+                    <div [hidden]="!a.errors.minlength">
+                        Minimum 6 character
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="rank">Rank:</label>
+                <input type="text" class="form-control" required name='urank' [(ngModel)]='update_rank' #b="ngModel">
+                <div *ngIf="b.errors && (b.dirty || b.touched)">
+                    <div [hidden]="!b.errors.required">
+                        the Rank is required
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="title">Title:</label>
+                <input type="text" class="form-control" required name='utitle' [(ngModel)]='update_title' #c="ngModel">
+                <div *ngIf="c.errors && (c.dirty || c.touched)">
+                    <div [hidden]="!c.errors.required">
+                        the Title is required
+                    </div>
+                </div>
+            </div>
+            
+            <button [disabled]="!edit.form.valid" type="submit" class="btn btn-success" (click)=updateMovie()>update</button>
+        </form>
+    </div>
+
+    <h3>Movies List</h3>    
+    <h4>Search</h4> 
+    <input type="text" [(ngModel)]='term' placeholder="search"/>
+  
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th width="200">Id</th>
+                <th width="200">Rank</th>
+                <th width="1200">Title</th>
+                <th width="400">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+              
+            <tr *ngFor='let ob of data |filter:term'>
+                <td>{{ob.id}}</td>
+                <td>{{ob.rank}}</td>
+                <td>{{ob.title}}</td>
+                <td>
+                    <!--<a class="btn btn-success">Update</a>
+                    <a class="btn btn-danger" (click)=deleteMovie(i)>Delete</a>-->
+                    <button class="btn-success" (click)=showUpdateArea(ob,data)>Edit</button>
+                    <button class="btn-danger" (click)=deleteMovie(ob,data)>Delete</button>
+                </td>
+            </tr>
+        
+        </tbody>
+     </table>
+</div>
